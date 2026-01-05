@@ -7,9 +7,9 @@ class Game {
         this.ctx = this.canvas.getContext('2d');
         this.audio = document.getElementById('game-audio');
 
-        // Set canvas size
-        this.canvas.width = 800;
-        this.canvas.height = 420;
+        // Set canvas size (responsive for mobile)
+        this.resizeCanvas();
+        window.addEventListener('resize', () => this.resizeCanvas());
 
         // Game state
         this.isPlaying = false;
@@ -26,14 +26,14 @@ class Game {
         this.maxCombo = 0;
         this.fewtureTokens = 0;
 
-        // Lane configuration
+        // Lane configuration (will be updated in resizeCanvas)
         this.lanes = [
-            { key: 'ArrowLeft', x: 165 },
-            { key: 'ArrowDown', x: 275 },
-            { key: 'ArrowUp', x: 385 },
-            { key: 'ArrowRight', x: 495 }
+            { key: 'ArrowLeft', x: 0 },
+            { key: 'ArrowDown', x: 0 },
+            { key: 'ArrowUp', x: 0 },
+            { key: 'ArrowRight', x: 0 }
         ];
-        this.targetY = 320; // Where notes should be hit
+        this.targetY = 0; // Where notes should be hit (updated dynamically)
 
         // Input tracking
         this.keysPressed = new Set();
@@ -44,7 +44,86 @@ class Game {
         // Bind methods
         this.handleKeyDown = this.handleKeyDown.bind(this);
         this.handleKeyUp = this.handleKeyUp.bind(this);
+        this.handleTouchStart = this.handleTouchStart.bind(this);
+        this.handleTouchEnd = this.handleTouchEnd.bind(this);
         this.gameLoop = this.gameLoop.bind(this);
+
+        // Add touch support
+        this.setupTouchControls();
+    }
+
+    /**
+     * Resize canvas to fit container
+     */
+    resizeCanvas() {
+        const container = this.canvas.parentElement;
+        this.canvas.width = container.clientWidth || window.innerWidth;
+        this.canvas.height = container.clientHeight - 100 || window.innerHeight - 200;
+
+        // Update lane positions for mobile (centered)
+        const centerX = this.canvas.width / 2;
+        const laneSpacing = 90;
+
+        this.lanes = [
+            { key: 'ArrowLeft', x: centerX - laneSpacing },
+            { key: 'ArrowDown', x: centerX },
+            { key: 'ArrowUp', x: centerX },
+            { key: 'ArrowRight', x: centerX + laneSpacing }
+        ];
+
+        // Target line is near bottom (above the buttons)
+        this.targetY = this.canvas.height - 120;
+    }
+
+    /**
+     * Setup touch controls for mobile
+     */
+    setupTouchControls() {
+        const lanes = document.querySelectorAll('.note-lane');
+
+        lanes.forEach(lane => {
+            // Touch start (same as key down)
+            lane.addEventListener('touchstart', this.handleTouchStart);
+
+            // Touch end (same as key up)
+            lane.addEventListener('touchend', this.handleTouchEnd);
+
+            // Also support mouse clicks for desktop testing
+            lane.addEventListener('mousedown', this.handleTouchStart);
+            lane.addEventListener('mouseup', this.handleTouchEnd);
+        });
+    }
+
+    /**
+     * Handle touch/click start
+     */
+    handleTouchStart(event) {
+        event.preventDefault();
+        const lane = event.currentTarget;
+        const key = lane.getAttribute('data-key');
+
+        if (key && !this.keysPressed.has(key)) {
+            this.keysPressed.add(key);
+            lane.classList.add('active');
+
+            if (this.isPlaying) {
+                this.checkNoteHit(key);
+            }
+        }
+    }
+
+    /**
+     * Handle touch/click end
+     */
+    handleTouchEnd(event) {
+        event.preventDefault();
+        const lane = event.currentTarget;
+        const key = lane.getAttribute('data-key');
+
+        if (key) {
+            this.keysPressed.delete(key);
+            lane.classList.remove('active');
+        }
     }
 
     /**
