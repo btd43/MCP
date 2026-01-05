@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rhythm Game - Fewture Beats</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="game-container">
+        <!-- Header with score and tokens -->
+        <div id="hud">
+            <div class="hud-item">
+                <span class="label">Score:</span>
+                <span id="score">0</span>
+            </div>
+            <div class="hud-item">
+                <span class="label">Combo:</span>
+                <span id="combo">0</span>
+            </div>
+            <div class="hud-item fewture-tokens">
+                <span class="label">💰 Fewture Tokens:</span>
+                <span id="tokens">0</span>
+            </div>
+        </div>
+
+        <!-- Main game area -->
+        <canvas id="game-canvas"></canvas>
+
+        <!-- Input zone (where notes land) -->
+        <div id="input-zone">
+            <div class="note-lane" data-key="ArrowLeft">
+                <div class="key-indicator">←</div>
+            </div>
+            <div class="note-lane" data-key="ArrowDown">
+                <div class="key-indicator">↓</div>
+            </div>
+            <div class="note-lane" data-key="ArrowUp">
+                <div class="key-indicator">↑</div>
+            </div>
+            <div class="note-lane" data-key="ArrowRight">
+                <div class="key-indicator">→</div>
+            </div>
+        </div>
+
+        <!-- Feedback text -->
+        <div id="feedback"></div>
+
+        <!-- Start menu -->
+        <div id="start-menu">
+            <h1>🎵 Fewture Beats 🎵</h1>
+            <p>Press arrow keys to the beat!</p>
+            <button id="start-btn">Start Game</button>
+            <div id="song-select">
+                <label for="song-picker">Select Song:</label>
+                <select id="song-picker">
+                    <option value="song1">Song 1</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Audio element -->
+    <audio id="game-audio"></audio>
+
+    <!-- Scripts -->
+    <script src="js/RhythmEngine.js"></script>
+    <script src="js/Note.js"></script>
+    <script src="js/CallAndResponse.js"></script>
+    <script src="js/Game.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
