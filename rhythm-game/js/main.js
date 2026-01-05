@@ -73,9 +73,94 @@ const sampleSong = {
     ]
 };
 
+// Euphoria - 158 BPM
+const euphoriaSong = {
+    name: "Euphoria",
+    bpm: 158,
+    audioUrl: "assets/music/euphoria bpm 158 g3 warp_2.m4a",
+    notes: []
+};
+
+// Generate Euphoria chart (158 BPM = 0.38s per beat)
+const beatDuration = 60 / 158; // ~0.38 seconds
+const keys = ['ArrowLeft', 'ArrowDown', 'ArrowUp', 'ArrowRight'];
+
+// Intro - sparse (bars 1-4)
+let time = 2.0; // Start at 2 seconds
+for (let i = 0; i < 8; i++) {
+    addNote(euphoriaSong, time, keys[i % 4]);
+    time += beatDuration * 2; // Every other beat
+}
+
+// Build up - single notes on beat (bars 5-8)
+for (let i = 0; i < 16; i++) {
+    addNote(euphoriaSong, time, keys[i % 4]);
+    time += beatDuration;
+}
+
+// Pre-drop - faster pattern (bars 9-10)
+for (let i = 0; i < 16; i++) {
+    addNote(euphoriaSong, time, keys[Math.floor(Math.random() * 4)]);
+    time += beatDuration / 2;
+}
+
+// DROP! - intense section (bars 11-14)
+for (let i = 0; i < 32; i++) {
+    const keyIndex = i % 4;
+    addNote(euphoriaSong, time, keys[keyIndex]);
+
+    // Add some doubles for intensity
+    if (i % 4 === 3) {
+        addNote(euphoriaSong, time + 0.1, keys[keyIndex]);
+    }
+
+    time += beatDuration;
+}
+
+// Call and response section (bars 15-18)
+// "Teacher" pattern
+const callStart = time;
+addNote(euphoriaSong, time, 'ArrowLeft');
+time += beatDuration / 2;
+addNote(euphoriaSong, time, 'ArrowDown');
+time += beatDuration / 2;
+addNote(euphoriaSong, time, 'ArrowUp');
+time += beatDuration / 2;
+addNote(euphoriaSong, time, 'ArrowRight');
+time += beatDuration * 3; // Pause
+
+// "Student" response (you repeat)
+addNote(euphoriaSong, time, 'ArrowLeft');
+time += beatDuration / 2;
+addNote(euphoriaSong, time, 'ArrowDown');
+time += beatDuration / 2;
+addNote(euphoriaSong, time, 'ArrowUp');
+time += beatDuration / 2;
+addNote(euphoriaSong, time, 'ArrowRight');
+time += beatDuration * 2;
+
+// Bridge - alternating pattern (bars 19-22)
+for (let i = 0; i < 16; i++) {
+    addNote(euphoriaSong, time, i % 2 === 0 ? 'ArrowLeft' : 'ArrowRight');
+    time += beatDuration;
+}
+
+// Final drop - maximum intensity (bars 23-26)
+for (let i = 0; i < 32; i++) {
+    addNote(euphoriaSong, time, keys[i % 4]);
+    time += beatDuration / 2;
+}
+
+// Outro - slow down (bars 27-28)
+for (let i = 0; i < 8; i++) {
+    addNote(euphoriaSong, time, keys[3 - (i % 4)]); // Reverse pattern
+    time += beatDuration * 2;
+}
+
 // Available songs
 const songs = {
-    'song1': sampleSong
+    'song1': sampleSong,
+    'euphoria': euphoriaSong
 };
 
 // Game instance
@@ -86,8 +171,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize game
     game = new Game();
 
-    // Load default song
-    game.loadSong(sampleSong);
+    // Load default song (Euphoria!)
+    game.loadSong(euphoriaSong);
 
     // Start button handler
     const startBtn = document.getElementById('start-btn');
